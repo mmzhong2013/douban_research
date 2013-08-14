@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">话题查询器</string>
+    <string name="menu_settings">Settings</string>
+    <string name="button_speech">查询话题</string>
+    <string name="button_reply">查询回复</string>
+    <string name="textView_operating_msg">请输入你要查询用户主页网址</string>
+	
+</resources>
