@@ -21,6 +21,7 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		SystemCommon.setActivity(this);
 		userName = (EditText) findViewById(R.id.editText_id);
 		speechCheck = (Button) findViewById(R.id.button_speech);
 		

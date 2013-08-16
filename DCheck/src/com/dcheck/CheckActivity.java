@@ -12,7 +12,10 @@ import org.jsoup.select.Elements;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,11 +23,14 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.CheckBox;
+import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class CheckActivity extends Activity {
 
@@ -33,6 +39,7 @@ public class CheckActivity extends Activity {
 	ProgressBar progressBar = null;
 	String name = null;
 	ArrayList<String> teams = null;
+	ArrayList<String> teamsName = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState); 
@@ -54,9 +61,30 @@ public class CheckActivity extends Activity {
 					name = msg.getData().getString("name");
 					userName.setText(name);
 					teams = msg.getData().getStringArrayList("teams");
+					teamsName = msg.getData().getStringArrayList("teamsName");
 					for (String string : teams) {
 						System.out.println(string);
 					}
+					ListView listView = new ListView(CheckActivity.this);
+					listView.setAdapter(new MyAdapter(CheckActivity.this));
+					listView.setBackgroundColor(Color.BLACK);
+					setContentView(listView);
+					//设置拖动时颜色
+					listView.setCacheColorHint(Color.BLACK);
+					//分割线
+					Drawable drawable = listView.getDivider();
+					drawable.setAlpha(55);
+					drawable.setColorFilter(new LightingColorFilter(Color.parseColor("#FFA07A"), 0));
+					listView.setOnItemClickListener(new OnItemClickListener() {
+
+						@Override
+						public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+								long arg3) {
+						
+						}
+					});
+					
+				
 				}else
 				if (msg.what == 2) {
 					System.out.println(2);
@@ -97,14 +125,17 @@ public class CheckActivity extends Activity {
 				if (title.html().endsWith("的小组")) {
 					Elements team = doc.getElementsByClass("ob");
 					ArrayList<String> teams = new ArrayList<String>();
+					ArrayList<String> teamsName = new ArrayList<String>();
 					for (Element element2 : team) {
 						Elements urls = element2.getElementsByTag("a");
 						teams.add(urls.get(0).attr("href"));
-						
+						Element name = element2.getElementsByTag("img").get(0);
+						teamsName.add(name.attr("alt"));
 					}
 					String name = title.html().substring(0, title.html().length()-3);
 					b.putString("name", name);
 					b.putStringArrayList("teams", teams);
+					b.putStringArrayList("teamsName", teamsName);
 					message.what = 1;
 					message.setData(b);
 					handler.sendMessage(message);
@@ -154,20 +185,22 @@ public class CheckActivity extends Activity {
 		@Override
 		public View getView(int arg0, View arg1, ViewGroup arg2) {
 		
-			LinearLayout linearLayout = new LinearLayout(context);
+			RelativeLayout relativeLayout = new RelativeLayout(context);
 			TextView view = new TextView(context);
-			view.setText(teams.get(arg0));
+			view.setText(teamsName.get(arg0));
 			view.setTextColor(Color.WHITE);
 			view.setGravity(Gravity.CENTER_VERTICAL);
 			view.setPadding((int) (SystemCommon.getWidthCoefficient()*30), 0, 0, 0);
 			view.setHeight((int) (SystemCommon.getWidthCoefficient()*150));
 			
-			
-			ImageView imageView = new ImageView(context);
-			imageView.setImageResource(R.drawable.ic_launcher);
-			linearLayout.addView(imageView);
-			linearLayout.addView(view);
-			return linearLayout;
+			CheckBox checkBox = new CheckBox(context);
+	
+			checkBox.setChecked(false);
+			relativeLayout.addView(view);
+			relativeLayout.addView(checkBox);
+			RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+			layoutParams.leftMargin = 110;
+			return relativeLayout;
 			
 		}
 		
